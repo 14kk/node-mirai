@@ -60,6 +60,19 @@ Image.value = image => {
     url: image.url,
   };
 };
+const Voice = ({ voiceId, url = '' }) => {
+  return {
+    type: 'Voice',
+    voiceId,
+    url,
+  };
+};
+Voice.value = voice => {
+  return {
+    voiceId: voice.voiceId,
+    url: voice.url,
+  };
+};
 
 const FlashImage = ({ imageId, url = '' }) => {
   return {
@@ -166,6 +179,7 @@ module.exports = {
   App,
   Quote,
   Poke,
+  Voice,
   toMiraiCode,
   parseMiraiCode,
 };

@@ -2,7 +2,7 @@ const axios = require('axios');
 const fs = require('fs');
 const FormData = require('form-data');
 
-const { Plain, Image, FlashImage } = require('./MessageComponent');
+const { Plain, Image, FlashImage, Voice} = require('./MessageComponent');
 
 const sendFriendMessage = async ({ //发送好友消息
   messageChain,
@@ -150,6 +150,53 @@ const sendImageMessage = async ({
   });
 };
 
+const uploadVoice = async ({
+  url,
+  type,
+  sessionKey,
+  host,
+}) => {
+  let voice = url;
+  if (typeof url === 'string') voice = fs.createReadStream(url);
+  const form = new FormData();
+  form.append('sessionKey', sessionKey);
+  form.append('type', type);
+  form.append('voice', voice );
+  const { data } = await axios.post(`${host}/uploadVoice`, form, {
+    headers: form.getHeaders(),
+  });
+  console.log(data)
+  return data;
+};
+
+const sendVoiceMessage = async ({
+  url,
+  qq,
+  group,
+  sessionKey,
+  host = 8080,
+}) => {
+  let type, send, target;
+ if (group) {
+    type = 'group';
+    send = sendGroupMessage;
+    target = group;
+  } else return console.error('Error @ sendVoiceMessage: you should provide group');
+  const voice = await uploadVoice({
+    url,
+    type,
+    sessionKey,
+    host,
+  });
+  const messageChain = [Voice(voice)];
+  return send({
+    messageChain,
+    target,
+    sessionKey,
+    host,
+  });
+};
+
 const sendFlashImageMessage = async ({
   url,
   qq,
@@ -191,5 +238,6 @@ module.exports = {
   sendQuotedTempMessage,
   uploadImage,
   sendImageMessage,
+  sendVoiceMessage,
   sendFlashImageMessage,
 };

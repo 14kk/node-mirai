@@ -21,6 +21,7 @@ const {
   sendQuotedGroupMessage,
   sendQuotedTempMessage,
   uploadImage,
+  sendVoiceMessage,
   sendImageMessage,
   sendFlashImageMessage
 } = require('./src/sendMessage');
@@ -270,6 +271,31 @@ class NodeMirai {
         console.error('Error @ sendImageMessage: unknown target type');
     }
   }
+  /**
+   * @method NodeMirai#sendVoiceMessage
+   * @async
+   * @param { string | Buffer | ReadStream } url 图片所在路径
+   * @param { message } target 发送目标对象
+   * @return { object } {
+   *  code: 0,
+   *  msg: "success",
+   *  messageId: 123456
+   * }
+   */
+  async sendVoiceMessage (url, target) {
+    switch (target.type) {
+      case 'GroupMessage':
+        return sendVoiceMessage({
+          url,
+          group: target.sender.group.id,
+          sessionKey: this.sessionKey,
+          host: this.host,
+        });
+      default:
+        console.error('Error @ sendVoiceMessage: unknown target type');
+    }
+  }
+
   /**
    * @method NodeMirai#sendFlashImageMessage
    * @async
